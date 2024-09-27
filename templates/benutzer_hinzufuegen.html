@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benutzer hinzufügen</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            overflow-x: auto; /* Horizontales Scrollen ermöglichen */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #007bff;
+        }
+        .btn-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Benutzer hinzufügen</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Chipnummer</th>
+                    <th>Benutzername</th>
+                </tr>
+                <tr>
+                    <td><input type="number" name="chipnummer" id="chipnummerInput" min="0" placeholder="Chipnummer"></td>
+                    <td><input type="text" name="benutzername" placeholder="Benutzername"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><button type="button" onclick="readChipnummer()">Chipnummer auslesen</button></td> 
+                </tr>
+            </tbody>
+        </table>
+        {% if readactivated %}
+            Bitte jetzt Chip an das Auslesegerät halten
+        {% endif %}
+        <p></p>
+        <button onclick="saveUser()">Speichern</button>
+        <p id="errorText" style="color: red; display: none;">Fehler! Es fehlt eine oder mehrere Eingaben. Die Chipnummer darf nur aus Zahlen bestehen.</p>
+        <p></p>
+        <button onclick="window.history.back()">Zurück</button>
+    </div>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var chipnummerInput = document.getElementById("chipnummerInput");
+        chipnummerInput.value = "{{ chipreaded }}";
+    });
+    
+    var isReadActivated = false;  
+
+    function readChipnummer() {
+        if (!isReadActivated) {
+            var chipnummerInput = document.getElementsByName("chipnummer")[0];
+            var readMessage = document.createElement("p");
+            readMessage.innerText = "Bitte Chip an Auslesegerät halten";
+            chipnummerInput.parentNode.appendChild(readMessage);
+            isReadActivated = true;
+        }
+        // Setzen Sie die Query-Parameter readactivated=True
+        var url = '/benutzer/benutzerverwaltung/benutzer_hinzufuegen?&readactivated=True';
+        window.location.href = url;
+    }
+
+
+        function saveUser() {
+        var chipnummer = document.getElementsByName("chipnummer")[0].value.trim();
+        var benutzername = document.getElementsByName("benutzername")[0].value.trim();
+        var errorText = document.getElementById("errorText");
+
+        if (chipnummer === "" || benutzername === "") {
+            errorText.style.display = "block";
+        } else {
+            // Wenn beide Felder ausgefüllt sind, Formular absenden
+            var url = '/benutzer/benutzerverwaltung?&rowId=' + encodeURIComponent(chipnummer) + '&username=' + encodeURIComponent(benutzername)+'&add='+ 'True';
+            window.location.href = url;
+        }
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bearbeiten</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            overflow-x: auto; /* Horizontales Scrollen ermöglichen */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #007bff;
+        }
+        .btn-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if row %}
+            <h2>Benutzername oder Chipnummer bearbeiten</h2>
+            <table>
+                <thead>
+                    <tr>
+                        {% for column in headers %}
+                        <th>{{ column }}</th>
+                        {% endfor %}    
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {% for value in row %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><input type="number" name="integer_field" min="0"></td> <!-- Nur Integer-Werte erlauben -->
+                        <td><input type="text" name="text_field"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="btn-container">
+                <form id="editForm">
+                    <!-- Verstecktes Eingabefeld für die alte row_Id -->
+                    <input type="hidden" name="alt_row_Id" value="{{ row_id }}">
+                    <button type="button" onclick="checkAndSubmit()">Speichern</button>
+                </form>
+                <p id="errorText" style="color: red; display: none;">Fehler! Es fehlt eine oder mehrere Eingaben. Die Chipnummer darf nur aus Zahlen bestehen.</p>
+                <p></p>
+                <form action="/benutzer/benutzerverwaltung">
+                    <button type="submit">Zurück</button>
+                </form>
+            </div>
+        {% else %}
+            <p>Die Row-ID konnte nicht in der Datei gefunden werden.</p>
+            <form action="/benutzer/benutzerverwaltung" method="GET">
+                <button type="submit">Zurück</button>
+            </form>
+        {% endif %}
+    </div>
+    <script>
+        function checkAndSubmit() {
+            var integerField = document.getElementsByName("integer_field")[0].value.trim();
+            var textField = document.getElementsByName("text_field")[0].value.trim();
+            var errorText = document.getElementById("errorText");
+            
+            // Holen Sie sich die alte row_Id aus dem versteckten Eingabefeld
+            var altRowId = document.getElementsByName("alt_row_Id")[0].value;
+
+            // Überprüfen, ob Felder ausgefüllt sind
+            if (integerField === "" || textField === "") {
+                errorText.style.display = "block";
+            } else {
+                // Wenn beide Felder ausgefüllt sind, Formular absenden
+                var url = '/benutzer/benutzerverwaltung?old_rowId=' + encodeURIComponent(altRowId) + '&rowId=' + encodeURIComponent(integerField) + '&username=' + encodeURIComponent(textField);
+                window.location.href = url;
+            }
+        }
+    </script>
+</body>
+</html>

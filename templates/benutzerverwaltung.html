@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benutzerverwaltung</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px;
+            overflow-x: auto; /* Horizontales Scrollen ermöglichen */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+        }
+        @media screen and (max-width: 600px) {
+            table, th, td {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form action="/logout" method="post">
+            <button type="submit">Abmelden</button>
+        </form>
+        <p></p>
+        <form action="/benutzer">
+            <button>Zurück</button>
+        </form>
+        <p></p>
+        <form action="/benutzer/benutzerverwaltung/benutzer_hinzufuegen">
+            <button>Benutzer hinzufügen</button>
+        </form>
+        <p></p>
+        <form action="/download_daten">
+            <button>Download Benutzerdaten</button>
+        </form>
+        <p></p>
+        <form action="/download_logdatei">
+            <button>Download Logdatei</button>
+        </form>
+        <h2>Benutzerverwaltung</h2>
+        <table id="userTable">
+            <thead>
+                <tr>
+                    {% for column in columns %}
+                        <th>{{ column }}</th>
+                    {% endfor %}
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                    <tr>
+                        {% for value in row %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                        <td class="actions">
+                            <form action="/benutzer/benutzerverwaltung/bearbeiten" style="margin-right: 5px;">
+                                <input type="hidden" name="rowId" value="{{ row[0] }}">
+                                <button type="submit">Bearbeiten</button>
+                            </form>
+                            <form action="/benutzer/benutzerverwaltung/loeschen" style="margin-left: 5px;">
+                                <input type="hidden" name="rowId" value="{{ row[0] }}">
+                                <button type="submit">Löschen</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
